@@ -20,6 +20,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>开始对比</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, styles.infoButton]}
+        onPress={() => navigation.navigate('Info')}
+      >
+        <Text style={styles.buttonText}>用药指南</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -50,6 +57,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '80%',
     alignItems: 'center',
+  },
+  infoButton: {
+    backgroundColor: '#34C759',
   },
   buttonText: {
     color: '#fff',

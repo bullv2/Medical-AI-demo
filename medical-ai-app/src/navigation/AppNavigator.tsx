@@ -7,6 +7,7 @@ import { RootStackParamList } from '../types/navigation';
 import HomeScreen from '../screens/HomeScreen';
 import MedicineComparisonScreen from '../screens/MedicineComparisonScreen';
 import ResultsScreen from '../screens/ResultsScreen';
+import InfoScreen from '../screens/InfoScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -28,17 +29,22 @@ const AppNavigator = () => {
         <Stack.Screen 
           name="Home" 
           component={HomeScreen} 
-          options={{ title: 'Medical AI Comparison' }}
+          options={{ title: '中医AI对比系统' }}
         />
         <Stack.Screen 
           name="MedicineComparison" 
           component={MedicineComparisonScreen}
-          options={{ title: 'Compare Medicines' }}
+          options={{ title: '药物对比' }}
         />
         <Stack.Screen 
           name="Results" 
           component={ResultsScreen}
-          options={{ title: 'Analysis Results' }}
+          options={{ title: '分析结果' }}
+        />
+        <Stack.Screen
+          name="Info"
+          component={InfoScreen}
+          options={{ title: '用药指南' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

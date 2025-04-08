@@ -6,4 +6,5 @@ export type RootStackParamList = {
     westernMedicine: string;
     analysis: string;
   };
+  Info: undefined;
 }; 

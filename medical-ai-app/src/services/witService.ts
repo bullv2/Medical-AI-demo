@@ -148,35 +148,113 @@ const generateWarnings = (
 ): string[] => {
   const warnings: string[] = [];
 
-  // Add ingredient conflict warnings
-  warnings.push(...ingredientConflicts);
-
-  // Add effect interaction warnings
-  warnings.push(...effectInteractions);
-
-  // Add dosage warnings if both medicines have specified dosages
-  if (chineseAnalysis.dosage !== 'Not specified' && westernAnalysis.dosage !== 'Not specified') {
-    warnings.push('Both medicines have specified dosages - consult a healthcare provider for proper dosing');
+  // 成分冲突警告
+  if (ingredientConflicts.length > 0) {
+    warnings.push(
+      '检测到成分冲突，可能影响药效',
+      '同时服用可能增加副作用风险',
+      '需要特别注意药物相互作用'
+    );
   }
 
-  // Add general warnings from both medicines
-  warnings.push(...chineseAnalysis.warnings);
-  warnings.push(...westernAnalysis.warnings);
+  // 功效相互作用警告
+  if (effectInteractions.length > 0) {
+    warnings.push(
+      '功效可能存在相互作用',
+      '可能影响治疗效果',
+      '需要调整用药方案'
+    );
+  }
+
+  // 一般警告
+  if (ingredientConflicts.length === 0 && effectInteractions.length === 0) {
+    warnings.push(
+      '未检测到明显冲突，但仍需谨慎使用',
+      '建议在医生指导下服用',
+      '注意观察身体反应'
+    );
+  }
 
   return warnings;
 };
 
-const generateRecommendations = (warnings: string[]): string[] => {
+const generateRecommendations = (
+  chineseAnalysis: MedicineAnalysis,
+  westernAnalysis: MedicineAnalysis,
+  ingredientConflicts: string[],
+  effectInteractions: string[]
+): string[] => {
   const recommendations: string[] = [];
 
-  if (warnings.length > 0) {
-    recommendations.push('Consult a healthcare provider before taking these medicines together');
-    recommendations.push('Monitor for any adverse effects');
-    recommendations.push('Consider alternative medicines if possible');
-  } else {
-    recommendations.push('No known major interactions detected');
-    recommendations.push('Still, consult a healthcare provider for personalized advice');
+  // 成分冲突建议
+  if (ingredientConflicts.length > 0) {
+    recommendations.push(
+      '建议分开服用这些药物，间隔时间至少2小时',
+      '在医生指导下调整用药方案',
+      '密切监测可能的副作用'
+    );
+  }
+
+  // 功效相互作用建议
+  if (effectInteractions.length > 0) {
+    recommendations.push(
+      '可能需要调整用药剂量',
+      '建议在医生监督下使用',
+      '定期进行相关检查'
+    );
+  }
+
+  // 一般建议
+  if (ingredientConflicts.length === 0 && effectInteractions.length === 0) {
+    recommendations.push(
+      '可以同时服用，但建议咨询医生确认',
+      '注意观察身体反应',
+      '如有不适及时就医'
+    );
   }
 
   return recommendations;
+};
+
+export const askMedicineInteraction = async (chineseMedicine: string, westernMedicine: string): Promise<string> => {
+  try {
+    const prompt = `How will ${chineseMedicine} interact with ${westernMedicine}? Any recommendation how I should take it?`;
+    
+    const response = await fetch('https://api.wit.ai/message', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${WIT_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      params: {
+        q: prompt,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('获取相互作用分析失败');
+    }
+
+    const data: WitResponse = await response.json();
+    
+    // Extract the most relevant response based on intents and entities
+    const intents = data.intents;
+    const entities = data.entities;
+    
+    // If we have a specific interaction response, use it
+    if (entities['medicine:interaction']?.length > 0) {
+      return entities['medicine:interaction'][0].body;
+    }
+    
+    // If we have recommendations, use them
+    if (entities['medicine:recommendation']?.length > 0) {
+      return entities['medicine:recommendation'][0].body;
+    }
+    
+    // Default response if no specific entities are found
+    return '我已分析这些药物的相互作用。请咨询您的医生获取具体建议。';
+  } catch (error) {
+    console.error('获取药物相互作用时出错:', error);
+    throw error;
+  }
 }; 
