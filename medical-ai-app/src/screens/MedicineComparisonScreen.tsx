@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
@@ -25,6 +26,11 @@ const MedicineComparisonScreen: React.FC<MedicineComparisonScreenProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const handleCompare = async () => {
+    if (!chineseMedicine.trim() || !westernMedicine.trim()) {
+      Alert.alert('Error', 'Please enter both Chinese and Western medicine details');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
@@ -46,14 +52,20 @@ const MedicineComparisonScreen: React.FC<MedicineComparisonScreenProps> = ({
 
   return (
     <ScrollView style={styles.container}>
+      <Text style={styles.instructions}>
+        Enter the details of both medicines to compare their ingredients and potential interactions.
+        Include as much information as possible about ingredients, effects, and dosage.
+      </Text>
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Chinese Medicine</Text>
         <TextInput
           style={styles.input}
           value={chineseMedicine}
           onChangeText={setChineseMedicine}
-          placeholder="Enter Chinese medicine name or composition"
+          placeholder="Enter Chinese medicine name, ingredients, effects, and dosage"
           multiline
+          numberOfLines={4}
         />
       </View>
 
@@ -63,8 +75,9 @@ const MedicineComparisonScreen: React.FC<MedicineComparisonScreenProps> = ({
           style={styles.input}
           value={westernMedicine}
           onChangeText={setWesternMedicine}
-          placeholder="Enter Western medicine name or composition"
+          placeholder="Enter Western medicine name, ingredients, effects, and dosage"
           multiline
+          numberOfLines={4}
         />
       </View>
 
@@ -73,10 +86,10 @@ const MedicineComparisonScreen: React.FC<MedicineComparisonScreenProps> = ({
       <TouchableOpacity
         style={[
           styles.button,
-          (!chineseMedicine || !westernMedicine || isLoading) && styles.buttonDisabled,
+          (!chineseMedicine.trim() || !westernMedicine.trim() || isLoading) && styles.buttonDisabled,
         ]}
         onPress={handleCompare}
-        disabled={!chineseMedicine || !westernMedicine || isLoading}
+        disabled={!chineseMedicine.trim() || !westernMedicine.trim() || isLoading}
       >
         {isLoading ? (
           <ActivityIndicator color="#fff" />
@@ -93,6 +106,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
+  },
+  instructions: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 20,
+    lineHeight: 20,
   },
   inputContainer: {
     marginBottom: 20,
