@@ -29,63 +29,141 @@ export const analyzeMedicine = async (text: string): Promise<MedicineAnalysis> =
     
     // Process the entities to create a structured analysis
     const analysis: MedicineAnalysis = {
-      name: entities.medicine_name?.[0]?.value || text,
-      ingredients: entities.ingredient?.map((i: any) => i.value) || [],
-      effects: entities.effect?.map((e: any) => e.value) || [],
-      interactions: entities.interaction?.map((i: any) => i.value) || [],
-      dosage: entities.dosage?.[0]?.value || 'Not specified',
-      warnings: entities.warning?.map((w: any) => w.value) || [],
+      name: entities['medicine:name']?.[0]?.value || '未知药物',
+      ingredients: entities['medicine:ingredient']?.map((e: any) => e.value) || [],
+      effects: entities['medicine:effect']?.map((e: any) => e.value) || [],
+      interactions: entities['medicine:interaction']?.map((e: any) => e.value) || [],
+      dosage: entities['medicine:dosage']?.[0]?.value || '未提供剂量信息',
+      warnings: [],
     };
 
     return analysis;
   } catch (error) {
     console.error('Error analyzing medicine:', error);
-    throw error;
+    return {
+      name: '分析失败',
+      ingredients: [],
+      effects: [],
+      interactions: [],
+      dosage: '未提供剂量信息',
+      warnings: ['无法分析药物信息，请重试'],
+    };
   }
 };
 
 export const compareMedicines = async (
   chineseMedicine: string,
   westernMedicine: string
-) => {
+): Promise<{
+  chineseAnalysis: MedicineAnalysis;
+  westernAnalysis: MedicineAnalysis;
+  comparison: {
+    ingredientConflicts: string[];
+    effectInteractions: string[];
+    recommendations: string[];
+    warnings: string[];
+  };
+}> => {
   try {
-    // Analyze each medicine
-    const chineseAnalysis = await analyzeMedicine(chineseMedicine);
-    const westernAnalysis = await analyzeMedicine(westernMedicine);
+    const [chineseResult, westernResult] = await Promise.all([
+      analyzeMedicine(chineseMedicine),
+      analyzeMedicine(westernMedicine),
+    ]);
 
-    // Compare ingredients for potential conflicts
-    const ingredientConflicts = findIngredientConflicts(
-      chineseAnalysis.ingredients,
-      westernAnalysis.ingredients
-    );
+    const ingredientConflicts: string[] = [];
+    const effectInteractions: string[] = [];
+    const recommendations: string[] = [];
+    const warnings: string[] = [];
 
-    // Compare effects for potential interactions
-    const effectInteractions = findEffectInteractions(
-      chineseAnalysis.effects,
-      westernAnalysis.effects
-    );
+    // 检查成分冲突
+    if (chineseResult.ingredients && westernResult.ingredients) {
+      for (const chineseIngredient of chineseResult.ingredients) {
+        for (const westernIngredient of westernResult.ingredients) {
+          if (chineseIngredient && westernIngredient) {
+            const conflict = checkIngredientConflict(chineseIngredient, westernIngredient);
+            if (conflict) {
+              ingredientConflicts.push(conflict);
+            }
+          }
+        }
+      }
+    }
 
-    // Generate warnings based on analysis
-    const warnings = generateWarnings(
-      chineseAnalysis,
-      westernAnalysis,
-      ingredientConflicts,
-      effectInteractions
-    );
+    // 检查功效相互作用
+    if (chineseResult.effects && westernResult.effects) {
+      for (const chineseEffect of chineseResult.effects) {
+        for (const westernEffect of westernResult.effects) {
+          if (chineseEffect && westernEffect) {
+            const interaction = checkEffectInteraction(chineseEffect, westernEffect);
+            if (interaction) {
+              effectInteractions.push(interaction);
+            }
+          }
+        }
+      }
+    }
+
+    // 生成警告和建议
+    if (ingredientConflicts.length > 0) {
+      warnings.push(
+        '检测到成分冲突，可能影响药效',
+        '同时服用可能增加副作用风险',
+        '需要特别注意药物相互作用'
+      );
+    }
+
+    if (effectInteractions.length > 0) {
+      warnings.push(
+        '功效可能存在相互作用',
+        '可能影响治疗效果',
+        '需要调整用药方案'
+      );
+    }
+
+    if (ingredientConflicts.length === 0 && effectInteractions.length === 0) {
+      recommendations.push(
+        '未检测到明显的药物冲突',
+        '建议在医生指导下使用',
+        '注意观察用药反应'
+      );
+    }
 
     return {
-      chineseAnalysis,
-      westernAnalysis,
+      chineseAnalysis: chineseResult,
+      westernAnalysis: westernResult,
       comparison: {
         ingredientConflicts,
         effectInteractions,
+        recommendations,
         warnings,
-        recommendations: generateRecommendations(warnings),
       },
     };
   } catch (error) {
     console.error('Error comparing medicines:', error);
-    throw error;
+    return {
+      chineseAnalysis: {
+        name: '分析失败',
+        ingredients: [],
+        effects: [],
+        interactions: [],
+        dosage: '未提供剂量信息',
+        warnings: ['无法分析中药信息'],
+      },
+      westernAnalysis: {
+        name: '分析失败',
+        ingredients: [],
+        effects: [],
+        interactions: [],
+        dosage: '未提供剂量信息',
+        warnings: ['无法分析西药信息'],
+      },
+      comparison: {
+        ingredientConflicts: [],
+        effectInteractions: [],
+        recommendations: ['无法完成药物对比，请重试'],
+        warnings: ['系统暂时无法处理您的请求'],
+      },
+    };
   }
 };
 
