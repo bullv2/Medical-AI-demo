@@ -25,39 +25,39 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({ route }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Chinese Medicine Analysis</Text>
-        <Text style={styles.subtitle}>Name: {parsedAnalysis.chineseAnalysis.name}</Text>
-        <Text style={styles.subtitle}>Ingredients:</Text>
-        {renderList(parsedAnalysis.chineseAnalysis.ingredients, 'No ingredients specified')}
-        <Text style={styles.subtitle}>Effects:</Text>
-        {renderList(parsedAnalysis.chineseAnalysis.effects, 'No effects specified')}
-        <Text style={styles.subtitle}>Dosage: {parsedAnalysis.chineseAnalysis.dosage}</Text>
+        <Text style={styles.sectionTitle}>中药分析</Text>
+        <Text style={styles.subtitle}>名称: {parsedAnalysis.chineseAnalysis.name}</Text>
+        <Text style={styles.subtitle}>成分:</Text>
+        {renderList(parsedAnalysis.chineseAnalysis.ingredients, '未指定成分')}
+        <Text style={styles.subtitle}>功效:</Text>
+        {renderList(parsedAnalysis.chineseAnalysis.effects, '未指定功效')}
+        <Text style={styles.subtitle}>用量: {parsedAnalysis.chineseAnalysis.dosage}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Western Medicine Analysis</Text>
-        <Text style={styles.subtitle}>Name: {parsedAnalysis.westernAnalysis.name}</Text>
-        <Text style={styles.subtitle}>Ingredients:</Text>
-        {renderList(parsedAnalysis.westernAnalysis.ingredients, 'No ingredients specified')}
-        <Text style={styles.subtitle}>Effects:</Text>
-        {renderList(parsedAnalysis.westernAnalysis.effects, 'No effects specified')}
-        <Text style={styles.subtitle}>Dosage: {parsedAnalysis.westernAnalysis.dosage}</Text>
+        <Text style={styles.sectionTitle}>西药分析</Text>
+        <Text style={styles.subtitle}>名称: {parsedAnalysis.westernAnalysis.name}</Text>
+        <Text style={styles.subtitle}>成分:</Text>
+        {renderList(parsedAnalysis.westernAnalysis.ingredients, '未指定成分')}
+        <Text style={styles.subtitle}>功效:</Text>
+        {renderList(parsedAnalysis.westernAnalysis.effects, '未指定功效')}
+        <Text style={styles.subtitle}>用量: {parsedAnalysis.westernAnalysis.dosage}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Comparison Results</Text>
+        <Text style={styles.sectionTitle}>对比结果</Text>
         
-        <Text style={styles.subtitle}>Ingredient Conflicts:</Text>
-        {renderList(parsedAnalysis.comparison.ingredientConflicts, 'No ingredient conflicts detected')}
+        <Text style={styles.subtitle}>成分冲突:</Text>
+        {renderList(parsedAnalysis.comparison.ingredientConflicts, '未检测到成分冲突')}
         
-        <Text style={styles.subtitle}>Effect Interactions:</Text>
-        {renderList(parsedAnalysis.comparison.effectInteractions, 'No effect interactions detected')}
+        <Text style={styles.subtitle}>功效相互作用:</Text>
+        {renderList(parsedAnalysis.comparison.effectInteractions, '未检测到功效相互作用')}
         
-        <Text style={styles.subtitle}>Warnings:</Text>
-        {renderList(parsedAnalysis.comparison.warnings, 'No warnings')}
+        <Text style={styles.subtitle}>警告:</Text>
+        {renderList(parsedAnalysis.comparison.warnings, '无警告')}
         
-        <Text style={styles.subtitle}>Recommendations:</Text>
-        {renderList(parsedAnalysis.comparison.recommendations, 'No recommendations')}
+        <Text style={styles.subtitle}>建议:</Text>
+        {renderList(parsedAnalysis.comparison.recommendations, '无建议')}
       </View>
     </ScrollView>
   );

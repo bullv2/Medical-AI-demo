@@ -27,7 +27,7 @@ const MedicineComparisonScreen: React.FC<MedicineComparisonScreenProps> = ({
 
   const handleCompare = async () => {
     if (!chineseMedicine.trim() || !westernMedicine.trim()) {
-      Alert.alert('Error', 'Please enter both Chinese and Western medicine details');
+      Alert.alert('错误', '请输入中药和西药的详细信息');
       return;
     }
 
@@ -43,7 +43,7 @@ const MedicineComparisonScreen: React.FC<MedicineComparisonScreenProps> = ({
         analysis: JSON.stringify(result, null, 2),
       });
     } catch (err) {
-      setError('Failed to analyze medicines. Please try again.');
+      setError('分析失败，请重试');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -53,29 +53,29 @@ const MedicineComparisonScreen: React.FC<MedicineComparisonScreenProps> = ({
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.instructions}>
-        Enter the details of both medicines to compare their ingredients and potential interactions.
-        Include as much information as possible about ingredients, effects, and dosage.
+        请输入两种药物的详细信息以比较其成分和潜在相互作用。
+        请尽可能详细地提供成分、功效和用量信息。
       </Text>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Chinese Medicine</Text>
+        <Text style={styles.label}>中药</Text>
         <TextInput
           style={styles.input}
           value={chineseMedicine}
           onChangeText={setChineseMedicine}
-          placeholder="Enter Chinese medicine name, ingredients, effects, and dosage"
+          placeholder="请输入中药名称、成分、功效和用量"
           multiline
           numberOfLines={4}
         />
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Western Medicine</Text>
+        <Text style={styles.label}>西药</Text>
         <TextInput
           style={styles.input}
           value={westernMedicine}
           onChangeText={setWesternMedicine}
-          placeholder="Enter Western medicine name, ingredients, effects, and dosage"
+          placeholder="请输入西药名称、成分、功效和用量"
           multiline
           numberOfLines={4}
         />
@@ -94,7 +94,7 @@ const MedicineComparisonScreen: React.FC<MedicineComparisonScreenProps> = ({
         {isLoading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Compare Medicines</Text>
+          <Text style={styles.buttonText}>对比药物</Text>
         )}
       </TouchableOpacity>
     </ScrollView>

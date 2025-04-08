@@ -10,15 +10,15 @@ type HomeScreenProps = {
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Medical AI Comparison</Text>
+      <Text style={styles.title}>中医AI对比系统</Text>
       <Text style={styles.subtitle}>
-        Compare Chinese and Western medicine compositions to identify potential conflicts
+        对比中西药成分，识别潜在冲突
       </Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('MedicineComparison')}
       >
-        <Text style={styles.buttonText}>Start Comparison</Text>
+        <Text style={styles.buttonText}>开始对比</Text>
       </TouchableOpacity>
     </View>
   );
